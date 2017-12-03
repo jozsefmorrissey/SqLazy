@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<jdbcTemplates>
+	<properties>
+		<classAnnotations>
+			<annotation>Override</annotation>
+		</classAnnotations>
+		<superpckg>com/characterBuilder/aerase</superpckg>
+		<superclassname>JdbcSuperClass</superclassname>
+		
+		<superclass>com.characterBuilder.aerase.JdbcSuperClass</superclass>
+		<queryFunctionName></queryFunctionName>		
+		<constructor>
+			<parameters>
+				<param>
+					<paramName>sasquatchanonomous</paramName>
+					<type>hairy</type>
+					<paramAnnotations>
+						<paramAnnotation>OutOfThisWorld</paramAnnotation>
+					</paramAnnotations>
+				</param>
+			</parameters>
+		</constructor>
+	</properties>
+
+
+	<jdbcClasses>
+		<jdbcClass name="Book">
+			<querys>
+				<query name="getAllBooks">
+						Select isbn_13, title, author 
+							from books
+					<fields>
+					</fields>
+					<parameters>
+					</parameters>
+				</query>
+				<query name="getBooksByRussell">
+						Select publish_date, price, isbn_13 
+							from books 
+							where $$author$$ = author 
+					<fields>
+					</fields>
+					<parameters>
+						<parameter sqlVarName="author"/>
+					</parameters>
+				</query>
+			</querys>
+		</jdbcClass>
+		<jdbcClass name="user_info">
+			<querys>
+				<query name="getUserByEmail">
+						Select email, password, name 
+							from user_info 
+							where $$email$$ = email 
+					<fields>
+						<field>name</field>
+						<field>password</field>
+						<field>email</field>
+					</fields>
+					<parameters>
+						<parameter sqlVarName="email"/>
+					</parameters>
+				</query>
+			</querys>
+		</jdbcClass>
+	</jdbcClasses>
+</jdbcTemplates>

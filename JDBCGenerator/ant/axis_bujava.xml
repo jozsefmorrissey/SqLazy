@@ -1,0 +1,303 @@
+<?xml version="1.0"?>
+
+<project default="main" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:if="ant:if" xmlns:unless="ant:unless">
+
+	<!--=================================Properties===================================-->
+	<description>
+		Create a Java Project (JAR) with Ant build script
+	</description>
+
+	<xmlproperty file="../jdbcTempLATES.XML" PREFIX="GEN" />
+
+	<property name="sourceFileLoc" value="${gen.jdbcTemplates.properties.sourceFileLocation}" />
+	<property name="superClassName" value="${gen.jdbcTemplates.properties.superclassname}" />
+	<property name="fake.super.path" value="src/main/java/${gen.jdbcTemplates.properties.superpckg}" />
+
+	
+	<condition property="sourceFileLocCheck">
+		<or>
+			<equals arg1="${sourceFileLoc}" arg2="" />
+			<not>
+				<isset property="sourceFileLoc" />
+			</not>
+		</or>
+	</condition>
+
+	<target name="sourceSetter" if="sourceFileLocCheck">
+		<echo message="Is set!" />
+		<propertyreset name="sourceFileLoc" value="src/main/java" />
+	</target>
+
+	<target name="buildProperties" depends="sourceSetter">
+		<echo message="Source: ${sourceFileLoc}" />
+	</target>
+
+	<property name="projectName" value="JDBCGenerator" />
+
+	<!-- Java sources -->
+	<property name="src.dir" location="../src" />
+
+	<!-- Java classes -->
+	<property name="build.dir" location="bin" />
+	<property name="build.run.dir" location="bin/generate" />
+	<property name="build.gen.dir" location="bin/dataAccess" />
+	<property name="build.fake.dir" location="bin/fake" />
+	<property name="build.test.dir" location="bin/test" />
+
+	<!-- Output, Jar -->
+	<property name="dist.dir" location="dist" />
+	<property name="lib.dir" location="lib" />
+
+	<property name="resource.dir" location="src/main/resources" />
+	<property name="resource.location" location="../src/main/resources" />
+	<property name="resource.save.location" location="src/main/resources" />
+
+	<property name="gen.dir" location="../../DataAccess/src/main/java/com/dataAccess" />
+	<property name="bean.dir" location="src/main/java/com/dataAccess/bean" />
+	<property name="dao.dir" location="src/main/java/com/dataAccess/dao" />
+	<property name="jdbc.dir" location="src/main/java/com/dataAccess/jdbc" />
+
+	<!--=================================Properties===================================-->
+
+	<!--=================================Configuration===================================-->
+
+
+	<path id="dep.runtime">
+		<fileset dir="./lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<property name="dep_cp" value="${toString:dep.runtime}" />
+
+	<path id="build.classpath">
+		<fileset dir="${basedir}">
+			<include name="lib/*.jar" />
+		</fileset>
+	</path>
+
+	<pathconvert property="manifest.classpath" pathsep=" ">
+		<path refid="build.classpath" />
+		<mapper>
+			<chainedmapper>
+				<flattenmapper />
+				<globmapper from="*.jar" to="lib/*.jar" />
+			</chainedmapper>
+		</mapper>
+	</pathconvert>
+
+	<!--=================================Configuration===================================-->
+
+	<!--=================================Initialization===================================-->
+
+	<target name="bootstrap" depends="init" description="Used to install the ivy task jar">
+	<!--	<mkdir dir="${user.home}/.ant/lib" />
+		<get dest="${user.home}/.ant/lib/ivy.jar" src="http://search.maven.org/remotecontent?filepath=org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar" />
+	--></target>
+
+	<target name="resolve" depends="bootstrap">
+		<ivy:retrieve pattern="lib/[conf]/[artifact]-[type]-[revision].[ext]" sync="true" />
+	</target>
+
+	<target name="buildpaths">
+		<!-- Create the time stamp -->
+		<tstamp />
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build.run.dir}" />
+		<mkdir dir="${build.gen.dir}" />
+		<mkdir dir="${build.fake.dir}" />
+		<mkdir dir="${build.test.dir}" />
+		<mkdir dir="${resource.save.location}" />
+		<mkdir dir="${bean.dir}" />
+		<mkdir dir="${dao.dir}" />
+		<mkdir dir="${jdbc.dir}" />
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${lib.dir}" />
+		<mkdir dir="${fake.super.path}" />
+		<echo message="path: ${fake.super.path}"></echo>
+	</target>
+
+	<target name="init" depends="buildpaths">
+		<!-- Create the time stamp 
+		<tstamp />
+		<copy todir="${resource.save.location}" overwrite="false">
+		  <fileset dir="${resource.location}/jdbcTemplates.xml"/>
+		</copy>
+		<copy todir="dist/src/main/resources/" overwrite="false">
+		  <fileset dir="${resource.location}/jdbcTemplates.xml"/>
+		</copy>-->
+	</target>
+
+	<target name="manifest" depends="init">
+		<manifestclasspath property="manifest_cp" jarfile="${dist.dir}/${projectName}.jar">
+			<classpath refid="dep.runtime" />
+		</manifestclasspath>
+		<echo message="Build Classpath: ${dep_cp}" />
+		<echo message="Manifest Classpath: ${manifest_cp}" />
+	</target>
+
+	<!--=================================Initialization===================================-->
+
+
+	<!--=================================Util===================================-->
+
+
+	<target name="createTemplate" depends="resolve">
+		<exec executable="java">
+			<arg value="-cp" />
+			<arg value='"${dist.dir}/Test.jar;lib/compile/*"' />
+			<arg value="com.example.InternalTest" />
+		</exec>
+	</target>
+
+	<target name="clean" description="clean up">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<scriptdef name="propertyreset" language="javascript" description="Allows to assign @{property} new value">
+		<attribute name="name" />
+		<attribute name="value" />
+	        project.setProperty(attributes.get("name"), attributes.get("value"));
+	</scriptdef>
+
+	<!--=================================Util===================================-->
+
+
+	<!--=================================Main===================================-->
+
+
+	<!-- Default, run this -->
+	<target name="main" depends="clean, distGenerations" />
+
+
+
+	<!--=================================Main===================================-->
+
+	<!--=================================Developemnt===================================-->
+
+
+	<!-- Default, run this -->
+	<target name="development" depends="clean, compile, dist, run" />
+
+	<target name="compile" depends="bootstrap, resolve" description="compile the source ">
+		<!-- Compile the java code from ${src.dir} into ${build.dir} -->
+		<ivy:cachepath pathid="compile" conf="compile" />
+		<javac includeantruntime="false" srcdir="${src.dir}/main/java/com/generate/;${gen.dir}" debug="true" destdir="${build.run.dir}" classpathref="compile" />
+	</target>
+	
+	<target name="dist" depends="manifest, compile" description="package, output to JAR">
+
+		<!-- Put everything in ${build} into the {$projectName}-${DSTAMP}.jar file -->
+		<jar jarfile="${dist.dir}/${projectName}.jar" basedir="${build.run.dir}">
+			<manifest>
+				<!-- create an executable Jar -->
+				<attribute name="Main-Class" value="com.generate.GenClass" />
+			</manifest>
+
+		</jar>
+	</target>
+
+	<target name="run" depends="distGenerations">
+	</target>
+
+	<!--=================================Developemnt===================================-->
+
+
+	<!--=================================Define Classes===================================-->
+
+	<target name="defineClasses" >
+		<exec executable="java">
+			<arg value="-cp" />
+			<arg value='"${dist.dir}\${projectName}.jar;lib/compile/*;"' />
+			<arg value="com.generate.GenClass" />
+			<arg value="0" />
+		</exec>
+	</target>
+
+	<target name="compileDefinitions" depends="defineClasses" description="compile the source ">
+		<!-- Compile the java code from ${src.dir} into ${build.dir} -->
+		<ivy:cachepath pathid="compile" conf="compile" />
+		<javac includeantruntime="false" srcdir="${gen.dir};../../DataAccess/src/generated/java/" debug="true" destdir="${build.gen.dir}" classpath="dist/JDBCGenerator.jar;dist/JDBCGen.jar;dist/fakeSuperGen.jar;" classpathref="compile" />
+	</target>
+
+	<target name="distDefinitions" depends="manifest, compileDefinitions" description="package, output to JAR">
+
+		<!-- Put everything in ${build} into the {$projectName}-${DSTAMP}.jar file -->
+		<jar jarfile="${dist.dir}/JDBCGen.jar" basedir="${build.gen.dir}">
+			<manifest>
+				<!-- create an executable Jar 
+				<attribute name="Main-Class" value="com.generate.GenClass" />-->
+			</manifest>
+
+		</jar>
+	</target>
+
+
+
+
+	<!--=================================Define Classes===================================-->
+
+
+	<!--=================================generate===================================-->
+
+
+	<target name="generate" depends="distDefinitions">
+		<exec executable="java">
+			<arg value="-cp" />
+			<arg value='"dist/JDBCGen.jar;dist/JDBCGenerator.jar;lib/compile/*;"' />
+			<arg value="com.generate.GenClass" />
+			<arg value="1" />
+		</exec>
+	</target>
+
+	<target name="compileGenerations" depends="generate" description="compile the source ">
+		<!-- Compile the java code from ${src.dir} into ${build.dir} -->
+		<ivy:cachepath pathid="compile" conf="compile" />
+		<javac includeantruntime="false" srcdir="${gen.dir}" debug="true" destdir="${build.gen.dir}" classpath="dist/JDBCGenerator.jar;dist/JDBCGen.jar;" classpathref="compile" />
+	</target>
+
+	<target name="distGenerations" depends="manifest, compileGenerations" description="package, output to JAR">
+
+		<!-- Put everything in ${build} into the {$projectName}-${DSTAMP}.jar file -->
+		<jar jarfile="${dist.dir}/JDBCGen.jar" basedir="${build.gen.dir}">
+			<manifest>
+				<!-- create an executable Jar 
+				<attribute name="Main-Class" value="com.generate.GenClass" />-->
+			</manifest>
+
+		</jar>
+	</target>
+
+
+
+	<!--=================================generate===================================-->
+
+
+	<!--=================================Build Tests===================================-->
+
+
+	<target name="disttest" depends="manifest, compiletest" description="package, output to JAR">
+
+		<echo message="Manifest: ${manifest.classpath}" />
+
+		<!-- Put everything in ${build} into the {$projectName}.jar file -->
+		<jar jarfile="${dist.dir}/Test.jar" basedir="${build.gen.dir}">
+			<manifest>
+				<!-- create an executable Jar -->
+				<attribute name="Main-Class" value="com.example.InternalTest" />
+			</manifest>
+
+		</jar>
+	</target>
+
+	<target name="compiletest" depends="init, bootstrap, resolve" description="compile the source ">
+		<!-- Compile the java code from ${src.dir} into ${build.dir} -->
+		<ivy:cachepath pathid="compile" conf="compile" />
+		<javac includeantruntime="false" srcdir="${src.dir}/test" debug="true" destdir="${build.test.dir}" classpath="dist/JDBCGenerator.jar;dist/JDBCGen.jar;" classpathref="compile" />
+	</target>
+
+	<!--=================================Build Tests===================================-->
+
+
+
+</project>
