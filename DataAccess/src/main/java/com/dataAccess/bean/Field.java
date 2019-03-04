@@ -1,5 +1,9 @@
 package com.dataAccess.bean;
 
+import java.util.List;
+
+import com.squareup.javapoet.AnnotationSpec;
+
 public class Field extends JavaAndSqlVar<Field>
 {
 	String javaInitialValue;
@@ -19,11 +23,17 @@ public class Field extends JavaAndSqlVar<Field>
 		super(sqlName, javaVarName, javaType);
 		this.javaInitialValue = javaInitialValue;
 	}
-	
+
+	public Field(String sqlName, String javaVarName, String javaType, String javaInitialValue, List<AnnotationSpec> annotations)
+	{
+		super(sqlName, javaVarName, javaType, annotations);
+		this.javaInitialValue = javaInitialValue;
+	}
+
 	public Field merge(Field obj)
 	{
 		if(obj == null)
-			return new Field(this.getSqlVarName(), this.getJavaVarName(), this.getJavaType(), this.javaInitialValue);
+			return new Field(this.getSqlVarName(), this.getJavaVarName(), this.getJavaType(), this.javaInitialValue, this.getAnnotations());
 		
 		Field merged = super.mergeJASvar(obj, new Field());
 		

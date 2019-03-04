@@ -7,6 +7,7 @@ public class TestJdbcConnect
 	public void testQuery() {
 //		 new JDBCProviderServiceLocationDAO().getNonSense("billy boy",
 //		 8675309l);
+		assert(true);
 	}
 
 }

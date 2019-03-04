@@ -25,8 +25,9 @@ public class GenClass
 	 * @param args
 	 * @throws IOException
 	 * @throws InterruptedException
+	 * @throws ClassNotFoundException 
 	 */
-	public static void main(String args[]) throws IOException, InterruptedException
+	public static void main(String args[]) throws IOException, InterruptedException, ClassNotFoundException
 	{
 		List<JdbcTypeWrapper> jdbcTypes = new ParceJdbcXML().xmlParser();
 		int def = 1;
@@ -40,7 +41,7 @@ public class GenClass
 			}
 	}
 	
-	public static void defineClasses(JdbcTypeWrapper jT)
+	public static void defineClasses(JdbcTypeWrapper jT) throws ClassNotFoundException
 	{
 
 		try
@@ -64,7 +65,7 @@ public class GenClass
 
 	}
 
-	public static void generateClasses(JdbcTypeWrapper jT)
+	public static void generateClasses(JdbcTypeWrapper jT) throws ClassNotFoundException
 	{
 		try
 		{

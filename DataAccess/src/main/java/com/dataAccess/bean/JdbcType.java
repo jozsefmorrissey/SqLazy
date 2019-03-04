@@ -1,6 +1,10 @@
 package com.dataAccess.bean;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import com.squareup.javapoet.AnnotationSpec;
 
 public class JdbcType
 {
@@ -8,6 +12,7 @@ public class JdbcType
 	private String abstractName;
 	private String pckage;
 	private List<Query> queries;
+	private HashMap<String, List<AnnotationSpec>> annotationMap = new HashMap<String, List<AnnotationSpec>>();
 	
 	public JdbcType()
 	{
@@ -106,5 +111,15 @@ public class JdbcType
 	public void setQueries(List<Query> queries)
 	{
 		this.queries = queries;
+	}
+	
+	public List<AnnotationSpec> getAnnotations(String type) {
+		if (annotationMap.get(type) == null) {
+			return new ArrayList<AnnotationSpec>();
+		}
+		return annotationMap.get(type);
+	}
+	public void setAnnotations(String type, List<AnnotationSpec> annotations) {
+		annotationMap.put(type, annotations);
 	}
 }

@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<jdbcTemplates>
+	<properties>
+		<classAnnotations>
+			<annotation>Override</annotation>
+		</classAnnotations>
+		<superpckg>com/garbage/fill</superpckg>
+		<superclassname>FakeSuper</superclassname>
+		
+		<superclass>com.garbage.fill.FakeSuper</superclass>
+		<queryFunctionName></queryFunctionName>		
+		<constructor>
+			<parameters>
+				<param>
+					<paramName>sasquatchanonomous</paramName>
+					<type>hairy</type>
+					<paramAnnotations>
+						<paramAnnotation>OutOfThisWorld</paramAnnotation>
+					</paramAnnotations>
+				</param>
+			</parameters>
+		</constructor>
+	</properties>
+
+
+	<jdbcClasss>
+		<jdbcClass name="ProviderServiceLocation"
+			abstractName="GenerateDaoImplAbs"
+			package="com.dataAccess">
+			<querys>
+				<query name="getNonSense">Hello world!
+					Select HELP_WANTED, PARTY_POOPER, BILL_VERMIN 
+						from diningRoom 
+						where $$BILL_VERMIN$$ = BILL_VERMIN 
+						AND $$PARTY_POOPER$$ = PARTY_POOPER
+					<fields>
+						<field javaVarName="hello" 
+							javaType="Double" 
+							javaInitialValue="0.0" 
+							sqlVarName="HELP_WANTED"/>
+					</fields>
+					<parameters>
+						<parameter sqlVarName="PARTY_POOPER"
+							sqlType="Literal" 
+							javaVarName="Hello" 
+							javaType='Long'/>
+					</parameters>
+				</query>
+				<query name="getEverything">
+						Select HELP_WANTED, PARTY_POOPER, BILL_VERMIN 
+							from diningRoom 
+							where $$BREAD_BUTTER$$ = BREAD_BUTTER 
+				</query>
+			</querys>
+		</jdbcClass>
+			<jdbcClass name="AccreditationAproximation">
+			<querys>
+				<query name="getGarbTastic">
+					Select HELICOPTER, DOWN_HAWK_BLACK, BRUCE_WILLIS, SPAGGETIOS 
+						from darkDungion 
+						where $$BILL_VERMIN$$ = BILL_VERMIN 
+						AND $$PARTY_POOPER$$ = PARTY_POOPER
+					<parameters>
+						<parameter javaType='long' sqlVarName="PARTY_POOPER"/>
+					</parameters>
+				</query>
+					<query name="getStuffedBunnies">
+						Select HELICOPTER, DOWN_HAWK_BLACK, BRUCE_WILLIS, SPAGGETIOS 
+							from darkDungion 
+							where $$DOWN_HAWK_BLACK$$ = DOWN_HAWK_BLACK 
+							AND $$SKITTLES$$ = SKITTLES
+					<fields>
+						<field javaType='long' sqlVarName="DOWN_HAWK_BLACK"/>
+						<field sqlVarName="BRUCE_WILLIS" javaInitialValue='"hello world!"'/>
+					</fields>
+				</query>
+			</querys>
+		</jdbcClass>
+	</jdbcClasss>
+</jdbcTemplates>

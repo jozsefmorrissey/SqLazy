@@ -10,6 +10,7 @@ import com.dataAccess.util.GenUtil;
 import com.dataAccess.util.StringUtil;
 import com.generate.parce.bean.Wrapper.FieldWrapper;
 import com.generate.parce.bean.Wrapper.JdbcTypeWrapper;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -24,7 +25,7 @@ public class GenerateBean
 		this.jdbcType = jdbcType;
 	}
 
-	public void generate() throws IOException
+	public void generate() throws IOException, ClassNotFoundException
 	{
 		TypeSpec.Builder typeBuilder = defineBean();
 
@@ -37,6 +38,7 @@ public class GenerateBean
 			String methodSuffix = StringUtil.capitalizeIndex(fieldName, 0);
 
 			FieldSpec.Builder fieldBuilder = FieldSpec.builder(fw.getJavaTypeClass(), fieldName, Modifier.PRIVATE);
+			addAnnotations(field, fieldBuilder);
 			if(fw.getJavaInitialValue() != null)
 				fieldBuilder.initializer("$L", fw.getJavaInitialValue());
 			typeBuilder.addField(fieldBuilder.build());
@@ -56,10 +58,16 @@ public class GenerateBean
 		save(typeBuilder);
 	}
 	
-	public void define()
+	public void addAnnotations(Field field, FieldSpec.Builder fieldBuilder) throws ClassNotFoundException {
+		for (AnnotationSpec ann : field.getAnnotations()) {
+			fieldBuilder.addAnnotation(ann);
+		}
+		System.out.println(field.getAnnotations().size());
+	}
+	
+	public void define() throws ClassNotFoundException
 	{
 		TypeSpec.Builder typeBuilder = defineBean();
-
 		save(typeBuilder);
 	}
 
@@ -68,9 +76,12 @@ public class GenerateBean
 		GenUtil.buildAndSave(jdbcType.getPackage(jdbcType.getBeanPkg()), typeBuilder);
 	}
 
-	private TypeSpec.Builder defineBean()
+	private TypeSpec.Builder defineBean() throws ClassNotFoundException
 	{
 		TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(jdbcType.getBeanName()).addModifiers(Modifier.PUBLIC);
+		for (AnnotationSpec ann : jdbcType.getAnnotations("bean")) {
+			typeBuilder.addAnnotation(ann);
+		}
 		return typeBuilder;
 	}
 }

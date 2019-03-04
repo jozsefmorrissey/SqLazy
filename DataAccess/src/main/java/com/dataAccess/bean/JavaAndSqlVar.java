@@ -1,10 +1,16 @@
 package com.dataAccess.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.squareup.javapoet.AnnotationSpec;
+
 public abstract class JavaAndSqlVar<T extends JavaAndSqlVar<T>> extends MergeBean<T>
 {
 	private String sqlVarName;
 	private String javaVarName;
 	private String javaType;
+	private List<AnnotationSpec> annotations = new ArrayList<AnnotationSpec>();
 	
 	public JavaAndSqlVar()
 	{
@@ -23,6 +29,14 @@ public abstract class JavaAndSqlVar<T extends JavaAndSqlVar<T>> extends MergeBea
 		this.javaVarName = javaVarName;
 		this.javaType = javaType;
 	}
+	public JavaAndSqlVar(String sqlVarName, String javaVarName, String javaType, List<AnnotationSpec> annotations)
+	{
+		super();
+		this.sqlVarName = sqlVarName;
+		this.javaVarName = javaVarName;
+		this.javaType = javaType;
+		this.annotations = annotations;
+	}
 	
 	/**
 	 * The templateing force me to create this function in this way.
@@ -38,16 +52,26 @@ public abstract class JavaAndSqlVar<T extends JavaAndSqlVar<T>> extends MergeBea
 			merged.setJavaType(javaType);
 			merged.setJavaVarName(javaVarName);
 			merged.setSqlVarName(sqlVarName);
+			merged.setAnnotations(annotations);
 			return merged;
 		}
 		
 		merged.setJavaType(mergeParam(this.javaType, obj.getJavaType()));
 		merged.setJavaVarName(mergeParam(this.javaVarName, obj.getJavaVarName()));
 		merged.setSqlVarName(mergeParam(this.sqlVarName, obj.getSqlVarName()));
-		
+		merged.setAnnotations(mergParam(this.annotations, obj.getAnnotations()));
 		return merged;
 	}
 
+	private <Q> List<Q> mergParam(List<Q> strList1, List<Q> strList2) {
+		for (Q str : strList1) {
+			if (strList2.indexOf(str) == -1) {
+				strList2.add(str);
+			}
+		}
+		// TODO Auto-generated method stub
+		return strList2;
+	}
 	@SuppressWarnings("unchecked")
 	@Override
 	public <U> U stringGetTieBreaker(String field1, String field2)
@@ -135,5 +159,11 @@ public abstract class JavaAndSqlVar<T extends JavaAndSqlVar<T>> extends MergeBea
 	public void setJavaType(String javaType)
 	{
 		this.javaType = javaType;
+	}
+	public List<AnnotationSpec> getAnnotations() {
+		return this.annotations;
+	}
+	public void setAnnotations(List<AnnotationSpec> annotations) {
+		this.annotations = annotations;
 	}
 }

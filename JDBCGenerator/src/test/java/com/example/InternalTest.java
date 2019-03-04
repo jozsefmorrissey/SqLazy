@@ -3,11 +3,19 @@ package com.example;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.dataAccess.bean.Field;
 import com.dataAccess.bean.JdbcType;
+import com.dataAccess.bean.Parameter;
+import com.dataAccess.bean.Query;
+import com.generate.generation.GenerateBean;
+import com.generate.parce.bean.Wrapper.JdbcTypeWrapper;
+import com.squareup.javapoet.AnnotationSpec;
 
 public class InternalTest
 {
@@ -22,13 +30,51 @@ public class InternalTest
 		buildXml("src/main/resources/mockJdbcTemplates.xml");
 		buildObject();
 	}
+	
+	@Test
+	public void fakeTest() throws IOException, ClassNotFoundException {
+		List<Parameter> params = new ArrayList<Parameter>();
+		List<Field> fields = new ArrayList<Field>();
+		Field fid = new Field("ID");
+		List<AnnotationSpec> annotations = new ArrayList<AnnotationSpec>();
+		annotations.add(AnnotationSpec.builder(javax.persistence.Id.class).build());
+		annotations.add(AnnotationSpec.builder(javax.persistence.Column.class).build());
+
+		AnnotationSpec.Builder annSpec = AnnotationSpec.builder(javax.persistence.GeneratedValue.class);
+		annSpec.addMember("strategy", "$T.SEQUENCE", javax.persistence.GenerationType.SEQUENCE.getClass());
+		annSpec.addMember("generator", "\"USER_ID_SEQ\"");
+		annotations.add(annSpec.build());
+		fid.setAnnotations(annotations);
+		System.out.println(annotations.size());
+		fields.add(fid);
+		fields.add(new Field("PASSWORD"));
+		fields.add(new Field("USER_NAME"));
+		fields.add(new Field("EMAIL"));
+		List<Query> querys = new ArrayList<Query>();
+		querys.add(new Query("USER", "", fields, params));
+		JdbcTypeWrapper jtw = new JdbcTypeWrapper("User", "Doesnt Matter", "com.stuff.religion", querys);
+
+		annotations = new ArrayList<AnnotationSpec>();
+		annotations.add(AnnotationSpec.builder(javax.persistence.Entity.class).build());
+		annotations.add(AnnotationSpec.builder(javax.persistence.Table.class).build());
+		annotations.add(AnnotationSpec.builder(lombok.Data.class).build());
+		
+		jtw.setAnnotations("bean", annotations);
+
+		
+		new GenerateBean(jtw).generate();
+		System.out.println("here" + jtw.getFields());
+		assert(true);
+	}
 
 
 	private void buildXml(String path)
 	{
 		try
 		{
-			encoded = Files.readAllBytes(Paths.get("src/main/resources/jdbcTemplates.xml"));
+			System.out.println(System.getProperty("user.dir"));
+			System.out.println(Paths.get("./src/main/resources/jdbcTemplates.xml").toString());
+			encoded = Files.readAllBytes(Paths.get("./src/main/resources/jdbcTemplates.xml"));
 			Files.write(Paths.get(path), encoded);
 //			printArray(100, encoded);
 		} catch (IOException e)
